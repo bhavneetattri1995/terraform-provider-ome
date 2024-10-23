@@ -70,4 +70,4 @@ jobs:
           echo $REPOSITORY
           echo "$PWD" 
           cd pr-flow
-          crewai flow run
+          crewai flow kickoff
