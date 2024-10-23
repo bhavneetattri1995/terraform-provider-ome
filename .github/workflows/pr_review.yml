@@ -56,7 +56,7 @@ jobs:
         run: |
           cd pr-flow
           poetry install
-          pip install crewai crewai-tools
+          pip install crewai==0.74.2 crewai-tools
 
       - name: Run Python script
         env:
@@ -70,4 +70,4 @@ jobs:
           echo $REPOSITORY
           echo "$PWD" 
           cd pr-flow
-          crewai flow kickoff
+          crewai flow run
