@@ -13,8 +13,8 @@ on:
         required: true
         default: "bhavneetattri1995/terraform-provider-ome"
       pr:
-	description: 'PR Number'
-	required: true
+				description: 'PR Number'
+				required: true
 
 jobs:
   run-python:
