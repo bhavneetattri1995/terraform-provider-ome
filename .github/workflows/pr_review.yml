@@ -1,78 +1,73 @@
 name: Run Python Script from Private Repo on PR
 
 on:
-  pull_request:
-  schedule:
-    - cron: '0 6 * * *'
-  push:
-    branches: [ "main" ]
   workflow_dispatch:
     inputs:
       repo:
-        description: 'Repo Name'
+        description: "Repo Name"
         required: true
         default: "bhavneetattri1995/terraform-provider-ome"
       pr:
-				description: 'PR Number'
-				required: true
+        description: "PR Number"
+        required: true
 
 jobs:
   run-python:
     runs-on: ubuntu-latest
 
     steps:
-    - name: echo secrets 
-      run: echo ${{ secrets.PAT_TOKEN }}
+      - name: echo secrets
+        run: echo ${{ secrets.PAT_TOKEN }}
 
-    - name: Checkout code from the current repo
-      uses: actions/checkout@v3
+      - name: Checkout code from the current repo
+        uses: actions/checkout@v3
 
-    - name: Checkout the private repository
-      uses: actions/checkout@v3
-      with:
-        repository: priyanshu-247/pr-flow
-        token: ${{ secrets.PAT_TOKEN }}
-        path: pr-flow
+      - name: Checkout the private repository
+        uses: actions/checkout@v3
+        with:
+          repository: priyanshu-247/pr-flow
+          token: ${{ secrets.PAT_TOKEN }}
+          path: pr-flow
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11' 
-        check-latest: true
-    
-    - name: Change directory
-      run: cd pr-flow
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+          check-latest: true
 
-    - name: Install poetry
-      uses: abatilo/actions-poetry@v2
-    
-    - name: Setup a local virtual environment (if no poetry.toml file)
-      run: |
+      - name: Change directory
+        run: cd pr-flow
+
+      - name: Install poetry
+        uses: abatilo/actions-poetry@v2
+
+      - name: Setup a local virtual environment (if no poetry.toml file)
+        run: |
           poetry config virtualenvs.create true --local
           poetry config virtualenvs.in-project true --local
 
-    - uses: actions/cache@v3
-      name: Define a cache for the virtual environment based on the dependencies lock file
-      with:
+      - uses: actions/cache@v3
+        name: Define a cache for the virtual environment based on the dependencies lock file
+        with:
           path: ./.venv
           key: venv-${{ hashFiles('poetry.lock') }}
 
-    - name: Install the project dependencies
-      run: |
-        cd pr-flow
-        poetry install
-        pip install crewai crewai-tools
-        
-    - name: Run Python script
-      env:
-        PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
-        GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-        REPOSITORY: ${{ github.event.inputs.repo }}
-        PR_NUMBER: ${{ github.event.inputs.pr }}
-      run: |
-        echo $GROQ_API_KEY
-        echo $PAT_TOKEN
-        echo $REPOSITORY
-        echo "$PWD" 
-        cd pr-flow
-        crewai flow run
+      - name: Install the project dependencies
+        run: |
+          cd pr-flow
+          poetry install
+          pip install crewai crewai-tools
+
+      - name: Run Python script
+        env:
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          REPOSITORY: ${{ github.event.inputs.repo }}
+          PR_NUMBER: ${{ github.event.inputs.pr }}
+        run: |
+          echo $GROQ_API_KEY
+          echo $PAT_TOKEN
+          echo $REPOSITORY
+          echo "$PWD" 
+          cd pr-flow
+          crewai flow run
